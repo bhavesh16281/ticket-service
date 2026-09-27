@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: ticket-service # Identifies the app in logs, monitoring, and Spring Boot actuator info.
+  datasource:
+    url: jdbc:mysql://localhost:3306/ticketdb # Connects to the local MySQL database used by the ticket service.
+    username: root # Local MySQL admin user for development.
+    password: root # This machine's MySQL root password; in production this should come from environment variables or secrets.
+    driver-class-name: com.mysql.cj.jdbc.Driver # Tells Spring which JDBC driver to use for MySQL connections.
+  jpa:
+    hibernate:
+      ddl-auto: update # Automatically updates the schema when entities change; useful for local development and faster iteration.
+    show-sql: true # Displays generated SQL to help debug and explain database behavior during interviews.
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect # Uses the Hibernate MySQL dialect so SQL is generated correctly for MySQL.
+        format_sql: true # Formats SQL output for readability in logs and debugging sessions.
+server:
+  port: 8080 # Runs the application on port 8080, which is a common default for local backend services.
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # Exposes actuator endpoints so health, metrics, and runtime status can be monitored.
+
