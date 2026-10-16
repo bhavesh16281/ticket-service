@@ -50,6 +50,9 @@ public class Ticket {
     @Column(length = 50)
     private String suggestedTeam;
 
+    @Column(length = 250)
+    private String suggestion;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 

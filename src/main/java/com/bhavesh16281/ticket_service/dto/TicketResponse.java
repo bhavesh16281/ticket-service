@@ -15,7 +15,8 @@ public record TicketResponse(
     String intent,
     String suggestedTeam,
     Instant createdAt,
-    Instant updatedAt
+    Instant updatedAt,
+    String suggestion
 ) {
     
     public static TicketResponse from(Ticket ticket) {
@@ -30,7 +31,8 @@ public record TicketResponse(
             ticket.getIntent(),
             ticket.getSuggestedTeam(),
             ticket.getCreatedAt(),
-            ticket.getUpdatedAt()
+            ticket.getUpdatedAt(),
+            ticket.getSuggestion()
         );
     }
 }

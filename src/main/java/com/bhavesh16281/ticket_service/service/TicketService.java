@@ -1,10 +1,12 @@
 package com.bhavesh16281.ticket_service.service;
 
 import org.springframework.stereotype.Service;
+import com.bhavesh16281.ticket_service.client.TicketClassification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.bhavesh16281.ticket_service.dto.TicketResponse;
+import com.bhavesh16281.ticket_service.client.ClassifierClient;
 import com.bhavesh16281.ticket_service.dto.CreateTicketRequest;
 import com.bhavesh16281.ticket_service.entity.Ticket;
 import com.bhavesh16281.ticket_service.exception.ResourceNotFoundException;
@@ -17,23 +19,32 @@ import org.springframework.transaction.annotation.Transactional;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
+    private final ClassifierClient classifierClient;
     
-    public TicketService(TicketRepository ticketRepository) {
+    public TicketService(TicketRepository ticketRepository, ClassifierClient classifierClient) {
 
         this.ticketRepository = ticketRepository;
+        this.classifierClient = classifierClient;
     }
     
     @Transactional 
     public TicketResponse create(CreateTicketRequest createTicketRequest) {
         
         Ticket ticket = new Ticket();
+        TicketClassification classification = classifierClient.classify(createTicketRequest.subject(), createTicketRequest.description());
 
         ticket.setSubject(createTicketRequest.subject());
         ticket.setDescription(createTicketRequest.description());
         ticket.setRequesterEmail(createTicketRequest.requesterEmail());
         ticket.setStatus(TicketStatus.OPEN);
         
-        return TicketResponse.from(ticketRepository.save(ticket));
+        ticket.setIntent(classification.intent());
+        ticket.setSentiment(classification.sentiment());
+        ticket.setPriority(classification.priority());
+        ticket.setSuggestedTeam(classification.supportTeam());
+        ticket.setSuggestion(classification.suggestion());
+
+        return TicketResponse.from(ticketRepository.save(ticket)); 
     }
 
     @Transactional(readOnly = true)

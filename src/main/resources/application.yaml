@@ -14,6 +14,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect # Uses the Hibernate MySQL dialect so SQL is generated correctly for MySQL.
         format_sql: true # Formats SQL output for readability in logs and debugging sessions.
+# app:
+#   classifier-service:
+#     base-url: http://localhost:8000 # Base URL of the external classifier service used by WebClient.
 server:
   port: 8080 # Runs the application on port 8080, which is a common default for local backend services.
 
@@ -22,4 +25,8 @@ management:
     web:
       exposure:
         include: "*" # Exposes actuator endpoints so health, metrics, and runtime status can be monitored.
+app:
+  classifier-service:
+    base-url: ${CLASSIFIER_SERVICE_BASE_URL:http://localhost:8081} # The base URL for the classifier service; adjust as needed for different environments.
+    timeout: 5000 # Timeout for requests to the classifier service in milliseconds.
 
