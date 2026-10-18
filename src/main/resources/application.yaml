@@ -28,5 +28,30 @@ management:
 app:
   classifier-service:
     base-url: ${CLASSIFIER_SERVICE_BASE_URL:http://localhost:8081} # The base URL for the classifier service; adjust as needed for different environments.
-    timeout: 5000 # Timeout for requests to the classifier service in milliseconds.
+    timeout: 4000 # Timeout for requests to the classifier service in milliseconds.
+springdoc:
+  api-docs:
+    path: /v3/api-docs # The path where the OpenAPI documentation will be available.
+  swagger-ui:
+    path: /swagger-ui.html # The path where the Swagger UI will be accessible.
 
+resilience4j:
+  circuitbreaker:
+    instances:
+      classifierService:
+        # register-health-indicator: true # Registers a health indicator for the classifier service circuit breaker.
+        sliding-window-type: COUNT_BASED # Type of sliding window to use for the circuit breaker; can be COUNT_BASED or TIME_BASED.
+        sliding-window-size: 10 # Number of calls to consider for the circuit breaker to calculate failure rate.
+        minimum-number-of-calls: 5 # Minimum number of calls required before the circuit breaker calculates the failure rate.
+        failure-rate-threshold: 50 # Percentage of failures to trigger the circuit breaker.
+        wait-duration-in-open-state: 15s # Time to wait before transitioning from open to half-open state in milliseconds.
+        permitted-number-of-calls-in-half-open-state: 3 # Number of calls allowed in half-open state before deciding to close or open the circuit.
+        automatic-transition-from-open-to-half-open-enabled: true # Enables automatic transition from open to half-open state after the wait duration.
+  retry:
+    instances:
+      classifierService:
+        max-attempts: 3 # Maximum number of retry attempts for the classifier service.
+        wait-duration: 300ms # Wait duration between retry attempts in milliseconds.
+        enable-exponential-backoff: true # Enables exponential backoff for retry attempts.
+        exponential-backoff-multiplier: 2 # Multiplier for exponential backoff between retry attempts.
+        ignore-exceptions: [] # List of exceptions to ignore for retry attempts; empty list means no exceptions are ignored.
